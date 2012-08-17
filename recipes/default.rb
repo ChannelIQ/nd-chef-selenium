@@ -1,20 +1,42 @@
-include_recipe 'java::default'
 
-package 'unzip'
+USER=node['selenium']['user']
 
-node['selenium']['bindings'].each do |lang,ver|
-  case lang
-  when 'python'
-    include_recipe 'python'
+group USER
 
-    python_pip 'selenium' do
-      version ver
-      action :install
-    end
-  when 'ruby'
-    gem_package 'selenium' do
-      version ver
-      action :install
-    end
-  end
+user USER do
+  comment "selenium user"
+  gid USER
+  #system true
+  shell "/bin/bash"
+  home node['selenium']['home']
+end
+
+#folder for pids
+directory '/var/run/selenium' do
+  mode "0775"
+  owner "root"
+  group "root"
+  action :create
+  recursive true
+end
+
+directory node['selenium']['server']['installpath'] do
+  owner USER
+  recursive true
+end
+
+directory node['selenium']['home']+'init/' do
+  mode "0775"
+  owner USER
+  group USER
+  action :create
+  recursive true
+end
+
+remote_file File.join(node['selenium']['server']['installpath'], 'selenium-server-standalone.jar') do
+  source "http://selenium.googlecode.com/files/selenium-server-standalone-#{node['selenium']['server']['version']}.jar"
+  action :create_if_missing
+  mode 0644
+  owner USER
+  group USER
 end
