@@ -1,0 +1,30 @@
+#!/bin/bash
+SELPATH=<%= File.join(node['selenium']['server']['installpath'], 'selenium-server-standalone.jar') %>
+HUBHOST=<%= node['selenium']['node']['hubhost'] %>:<%= node['selenium']['server']['hubport'] %>
+
+#required for children (WebDriver) to know what display to use
+export DISPLAY=<%= node['selenium']['xvfb']['display'] %>
+
+NODEJAVA=/usr/bin/java
+NODEARGS="-jar $SELPATH -role node -hub http://$HUBHOST/grid/register"
+PIDFILE=/var/run/selenium/node_${DISPLAY:1}.pid
+case "$1" in
+  start)
+    echo -n "Starting grid hub"
+    /sbin/start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background --exec $NODEJAVA -- $NODEARGS
+    echo "."
+    ;;
+  stop)
+    echo -n "Stopping grid hub"
+    /sbin/start-stop-daemon --stop --quiet --pidfile $PIDFILE
+    echo "."
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  *)
+  echo "Usage: /etc/init.d/run-hub {start|stop|restart}"
+  exit 1
+esac
+exit 0
