@@ -8,19 +8,23 @@ when 'x86_64'
 end
 
 package 'chromium-browser'
+package 'unzip'
 
-remote_file "/usr/src/chromedriver_#{arch}_#{node['selenium']['chromedriver_version']}.zip" do
-  source "http://chromedriver.googlecode.com/files/chromedriver_#{arch}_#{node['selenium']['chromedriver_version']}.zip"
+ARCHIVE="chromedriver_#{arch}_#{node['selenium']['chromedriver_version']}.zip"
+
+remote_file "/usr/src/#{ARCHIVE}" do
+  source "http://chromedriver.googlecode.com/files/#{ARCHIVE}"
   action :create_if_missing
-  notifies :run, "execute[unpack chromedriver]", :immediately
+  #notifies :run, resources(:execute => "unpack_chromedriver"), :immediately
 end
 
-execute 'unpack chromedriver' do
-  command "unzip -o /usr/src/chromedriver_#{arch}_#{node['selenium']['chromedriver_version']}.zip -d /usr/local/bin"
-  action :nothing
+execute "unpack_chromedriver" do
+  command "unzip -o /usr/src/#{ARCHIVE} -d /usr/local/bin"
+  action :run
 end
 
 file '/usr/local/bin/chromedriver' do
+  action :touch
   mode 0755
   owner node['selenium']['user']
   group node['selenium']['user']

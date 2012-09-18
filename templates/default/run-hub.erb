@@ -13,11 +13,12 @@ case "$1" in
     ;;
   stop)
     echo -n "Stopping grid hub"
-    /sbin/start-stop-daemon --stop --quiet --pidfile $PIDFILE
+    /sbin/start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
     echo "."
     ;;
   restart)
     $0 stop
+    sleep 2
     $0 start
     ;;
   *)

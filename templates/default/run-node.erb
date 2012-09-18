@@ -7,25 +7,26 @@ HUBHOST=<%= node['selenium']['node']['hubhost'] %>:<%= node['selenium']['server'
 export DISPLAY=<%= node['selenium']['xvfb']['display'] %>
 
 NODEJAVA=/usr/bin/java
-NODEARGS="-jar $SELPATH -role node -hub http://$HUBHOST/grid/register -nodeConfig $CONFIGPATH"
+NODEARGS="-jar $SELPATH -role webdriver -hub http://$HUBHOST/grid/register -nodeConfig $CONFIGPATH"
 PIDFILE=/var/run/selenium/node_${DISPLAY:1}.pid
 case "$1" in
   start)
-    echo -n "Starting grid hub"
+    echo -n "Starting grid node"
     /sbin/start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background --exec $NODEJAVA -- $NODEARGS
     echo "."
     ;;
   stop)
-    echo -n "Stopping grid hub"
-    /sbin/start-stop-daemon --stop --quiet --pidfile $PIDFILE
+    echo -n "Stopping grid node"
+    /sbin/start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
     echo "."
     ;;
   restart)
     $0 stop
+    sleep 2
     $0 start
     ;;
   *)
-  echo "Usage: /etc/init.d/run-hub {start|stop|restart}"
+  echo "Usage: /etc/init.d/run-node {start|stop|restart}"
   exit 1
 esac
 exit 0
