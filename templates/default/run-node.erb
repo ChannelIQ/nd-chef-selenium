@@ -1,12 +1,13 @@
 #!/bin/bash
 SELPATH=<%= File.join(node['selenium']['server']['installpath'], 'selenium-server-standalone.jar') %>
+CONFIGPATH=<%= File.join(node['selenium']['server']['installpath'], 'nodeConfig.json') %>
 HUBHOST=<%= node['selenium']['node']['hubhost'] %>:<%= node['selenium']['server']['hubport'] %>
 
 #required for children (WebDriver) to know what display to use
 export DISPLAY=<%= node['selenium']['xvfb']['display'] %>
 
 NODEJAVA=/usr/bin/java
-NODEARGS="-jar $SELPATH -role node -hub http://$HUBHOST/grid/register"
+NODEARGS="-jar $SELPATH -role node -hub http://$HUBHOST/grid/register -nodeConfig $CONFIGPATH"
 PIDFILE=/var/run/selenium/node_${DISPLAY:1}.pid
 case "$1" in
   start)

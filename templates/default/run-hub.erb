@@ -1,14 +1,14 @@
 #!/bin/bash
 SELPATH=<%= File.join(node['selenium']['server']['installpath'], 'selenium-server-standalone.jar') %>
-HUBPORT=<%= node['selenium']['server']['hubport'] %>
+CONFIGPATH=<%= File.join(node['selenium']['server']['installpath'], 'hubConfig.json') %>
 
 HUBJAVA=/usr/bin/java
-HUBARGS="-jar $SELPATH -role hub -port $HUBPORT"
+HUBARGS="-jar $SELPATH -role hub -hubConfig $CONFIGPATH "
 PIDFILE=/var/run/selenium/hub.pid
 case "$1" in
   start)
     echo -n "Starting grid hub"
-    /sbin/start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background --exec $HUBJAVA -- $HUBARGS
+    /sbin/start-stop-daemon --start --pidfile $PIDFILE --make-pidfile --background --exec $HUBJAVA -- $HUBARGS
     echo "."
     ;;
   stop)
@@ -25,4 +25,3 @@ case "$1" in
   exit 1
 esac
 exit 0
-#java -jar <%= File.join(node['selenium']['server']['installpath'], 'selenium-server-standalone.jar') %> -role hub -port <%= node['selenium']['server']['hubport'] =>
