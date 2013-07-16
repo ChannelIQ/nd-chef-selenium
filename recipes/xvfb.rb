@@ -41,5 +41,5 @@ end
 
 service SERVNAME do
   supports :restart => true
-  action :restart
+  action :start
 end
